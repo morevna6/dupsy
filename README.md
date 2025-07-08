@@ -23,9 +23,15 @@ Install the dependencies:
 ```bash
 pip install pandas rapidfuzz
 
+
+---
+
 ## Author
 Developed by **F. Günışığı Aydoğan** *(a.k.a. Morevna)*  
 
 🔗 [Portfolio Website](https://morevna6.github.io/)  
 🔗 [LinkedIn](https://www.linkedin.com/in/gunisigiaydogan)  
 🔗 [GitHub](https://github.com/morevna6)
+
+---
+
