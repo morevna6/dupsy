@@ -37,13 +37,14 @@ mode = st.radio("Select Comparison Mode", ["Single File", "Multiple Files"])
 uploaded_files = st.file_uploader(
     "Upload Excel file(s)",
     type=['xlsx', 'xls'],
-    accept_multiple_files=(mode=="Multiple File")
+    accept_multiple_files=(mode == "Multiple Files")
 )
 
 if uploaded_files:
     st.session_state.file_paths = uploaded_files
     # Load first file to extract columns
-    df = pd.read_excel(uploaded_files[0])
+    uploaded_files[0].seek(0)
+    df = pd.read_excel(BytesIO(uploaded_files[0].read()))
     columns = df.columns.tolist()
     st.session_state.column_vars = {col: True for col in columns}  # default all selected
 
@@ -73,7 +74,8 @@ def find_fuzzy_matches(data, threshold):
 if st.button("Dupsify") and uploaded_files and selected_columns:
     data = []
     for f in uploaded_files:
-        df = pd.read_excel(f)
+        f.seek(0)
+        df = pd.read_excel(BytesIO(f.read()))
         fname = f.name
         for col in selected_columns:
             if col in df.columns:
@@ -111,7 +113,8 @@ def export_cleaned_file():
 
     cleaned_data = []
     for f in st.session_state.file_paths:
-        df = pd.read_excel(f)
+        f.seek(0)
+        df = pd.read_excel(BytesIO(f.read()))
         fname = f.name
         remove_vals = matched_values_by_file.get(fname, set())
         to_remove_indices = set()
@@ -122,6 +125,7 @@ def export_cleaned_file():
                         to_remove_indices.add(idx)
         df_cleaned = df.drop(index=to_remove_indices)
         cleaned_data.append(df_cleaned)
+
     final = pd.concat(cleaned_data, ignore_index=True)
     buffer = BytesIO()
     final.to_excel(buffer, index=False)
