@@ -40,8 +40,13 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=(mode == "Multiple Files")
 )
 
+# Make uploaded_files always a list
 if uploaded_files:
+    if not isinstance(uploaded_files, list):
+        uploaded_files = [uploaded_files]
+
     st.session_state.file_paths = uploaded_files
+
     # Load first file to extract columns
     uploaded_files[0].seek(0)
     df = pd.read_excel(BytesIO(uploaded_files[0].read()))
@@ -120,9 +125,9 @@ def export_cleaned_file():
         to_remove_indices = set()
         for col in selected_columns:
             if col in df.columns:
-                for idx, val in df[col].items():
+                for idx_row, val in df[col].items():
                     if normalize(val) in remove_vals:
-                        to_remove_indices.add(idx)
+                        to_remove_indices.add(idx_row)
         df_cleaned = df.drop(index=to_remove_indices)
         cleaned_data.append(df_cleaned)
 
